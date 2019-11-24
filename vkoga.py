@@ -20,7 +20,8 @@ class vkoga(BaseEstimator):
     ### TODO:  * jupyter
     ### TODO:  * test scikit compatibility
     ### TODO:  * guardare check_X_y, check_is_fitted(), ...
-    
+    ### TODO:  * define own scoring for vectorial output
+     
     def __init__(self, kernel=RBF(), verbose=True, 
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=100):
@@ -42,7 +43,6 @@ class vkoga(BaseEstimator):
         self.tol_p = tol_p
         
     def selection_rule(self, f, p):
-        # Move to 2 norm (for vectorial outputs) 
         f = np.sum(f ** 2, axis=1)
         if self.greedy_type == 'f_greedy':
             idx = np.argmax(f)
@@ -64,12 +64,11 @@ class vkoga(BaseEstimator):
         self.coef_ = np.linalg.solve(A, y)
 
     def fit(self, X, y):
-       
         # Initialize the model (cold start)
         self.coef_ = None
         self.ctrs_ = None
         
-        # Initialize the convergence train_hist (cold start)
+        # Initialize the convergence history (cold start)
         self.train_hist = {}
         self.train_hist['n'] = []
         self.train_hist['f'] = []
@@ -89,7 +88,7 @@ class vkoga(BaseEstimator):
 
 
 
-        self.max_iter = min(self.max_iter, N)#Check
+        self.max_iter = min(self.max_iter, N) #Check
         
         
         indI = []
@@ -145,7 +144,7 @@ class vkoga(BaseEstimator):
         else:
             self.print_message('end')              
 
-        # define coefficients and centers
+        # Define coefficients and centers
         c = c[:n+1, :]
         Cut = Cut[:n+1, :n+1]
         indI = indI[:n+1]
