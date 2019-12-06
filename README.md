@@ -13,7 +13,7 @@ The demo can also be executed online on Binder: [![Binder](https://mybinder.org/
 ## How to cite:
 If you use this code in your work, please remember to cite the paper
 
-...
+>>>
 @TechReport{SaHa2019,
   Author                   = {Santin, Gabriele and Haasdonk, Bernard},
   Title                    = {Kernel Methods for Surrogate Modeling},
@@ -22,7 +22,7 @@ If you use this code in your work, please remember to cite the paper
   Type                     = {ArXiv},
  Url                      = {https://arxiv.org/abs/1907.10556}
 }
-...
+>>>
 
 
 ## Other languages:
