@@ -15,12 +15,19 @@ If you use this code in your work, please remember to cite the paper
 
 >>>
 @TechReport{SaHa2019,
+ 
   Author                   = {Santin, Gabriele and Haasdonk, Bernard},
+  
   Title                    = {Kernel Methods for Surrogate Modeling},
+  
   Year                     = {2019},
+  
   Number                   = {1907.10556},
+  
   Type                     = {ArXiv},
+ 
  Url                      = {https://arxiv.org/abs/1907.10556}
+
 }
 >>>
 
