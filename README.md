@@ -3,7 +3,7 @@ Python implementation of the VKOGA algorithm.
 
 
 ## Usage:
-The algorithm is implemented as a [scikit-learn](https://scikit-learn.org/stable/) ```Estimator```, and it can be used via the ```fit``` and ```predict``` methods.
+The algorithm is implemented as a [scikit-learn](https://scikit-learn.org/stable/) `Estimator`, and it can be used via the `fit` and `predict` methods.
 
 The best way to start using the algorithm is having a look at the [demo Notebook](demo.ipynb). 
 
