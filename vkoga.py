@@ -6,27 +6,19 @@ Created on Sat Oct 26 14:44:27 2019
 @author: gab
 '''
 
-from kernels import Kernel, RBF
+from kernels import Gaussian
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator
+from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
     
-class vkoga(BaseEstimator):
-    ### TODO: Next steps  
-    ### TODO:  * reorthogonalization
-    ### TODO:  * decent comments & documentation
-    ### TODO:  * jupyter
-    ### TODO:  * test scikit compatibility
-    ### TODO:  * guardare check_X_y, check_is_fitted(), ...
-    ### TODO:  * define own scoring for vectorial output
-    ### TODO:  * Check scikit-learn compatibility: https://scikit-learn.org/dev/developers/develop.html
-    ### TODO:  * Guardare se con PyTorch va meglio
-    
-    def __init__(self, kernel=RBF(), verbose=True, 
+
+class VKOGA(BaseEstimator):
+   
+    def __init__(self, kernel=Gaussian(), verbose=True, 
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=100):
         
-        super(vkoga, self).__init__()
+        super(VKOGA, self).__init__()
         
         # Set the verbosity on/off
         self.verbose = verbose
@@ -57,16 +49,10 @@ class vkoga(BaseEstimator):
             idx = np.argmax(p)
             p_max = p[idx]
         return idx, f_max, p_max
-    
-    def fit_(self, X, y):
-        self.ctrs_ = X
-        A = self.kernel.eval(X, X)
-        self.coef_ = np.linalg.solve(A, y)
 
     def fit(self, X, y):
-        # Initialize the model (cold start)
-        self.coef_ = None
-        self.ctrs_ = None
+        # Check the dataset
+        X, y = check_X_y(X, y, multi_output=True)
         
         # Initialize the convergence history (cold start)
         self.train_hist = {}
@@ -76,9 +62,11 @@ class vkoga(BaseEstimator):
         
         # Initialize the residual
         y = np.array(y)
+        if len(y.shape) == 1:
+            y = y[:, None]
         
         # Get the data dimension        
-        N, q = y.shape         
+        N, q = y.shape
 
         # Check the data dimension
         if X.shape[0] != N:
@@ -147,12 +135,22 @@ class vkoga(BaseEstimator):
         indI = indI[:n+1]
         self.coef_ = Cut.transpose() @ c
         self.ctrs_ = X[indI, :]
-        f_max = np.sqrt(f_max[:n+1]);
-        p_max = np.sqrt(p_max[:n+1]);
-        return self, self.train_hist['f'], self.train_hist['p']
+        f_max = np.sqrt(f_max[:n+1])
+        p_max = np.sqrt(p_max[:n+1])
 
-    def predict(self, x):
-        return self.kernel.eval(x, self.ctrs_) @ self.coef_     
+        return self
+
+
+    def predict(self, X):
+        # Check is fit had been called
+        check_is_fitted(self, 'coef_')
+
+        # Validate the input
+        X = check_array(X)
+   
+        # Evaluate the model
+        return self.kernel.eval(X, self.ctrs_) @ self.coef_     
+
 
     def print_message(self, when):
         

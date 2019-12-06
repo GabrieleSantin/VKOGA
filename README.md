@@ -1,5 +1,5 @@
 # VKOGA
-Python implementation of the VKOGA algorithm.
+Python implementation of the Vectorial Kernel Orthogonal Greedy Algorithm.
 
 
 ## Usage:
@@ -27,7 +27,7 @@ If you use this code in your work, please cite the paper
 }
 ```
 
-## Other languages:
+## Other implementations:
 The original Matlab version of this software is maintained here:
 [VKOGA](https://gitlab.mathematik.uni-stuttgart.de/pub/ians-anm/vkoga)
 
