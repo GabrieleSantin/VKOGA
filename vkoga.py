@@ -5,8 +5,6 @@ Created on Sat Oct 26 14:44:27 2019
 
 @author: gab
 '''
-# Guardare se con PyTorch va meglio
-#Check scikit-learn compatibility: https://scikit-learn.org/dev/developers/develop.html
 
 from kernels import Kernel, RBF
 import numpy as np
@@ -21,7 +19,9 @@ class vkoga(BaseEstimator):
     ### TODO:  * test scikit compatibility
     ### TODO:  * guardare check_X_y, check_is_fitted(), ...
     ### TODO:  * define own scoring for vectorial output
-     
+    ### TODO:  * Check scikit-learn compatibility: https://scikit-learn.org/dev/developers/develop.html
+    ### TODO:  * Guardare se con PyTorch va meglio
+    
     def __init__(self, kernel=RBF(), verbose=True, 
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=100):
@@ -83,9 +83,6 @@ class vkoga(BaseEstimator):
         # Check the data dimension
         if X.shape[0] != N:
             raise ValueError('X.shape[0] should be the same as y.shape[0]')
-
-
-
 
 
         self.max_iter = min(self.max_iter, N) #Check
@@ -160,6 +157,7 @@ class vkoga(BaseEstimator):
     def print_message(self, when):
         
         if self.verbose and when == 'begin':
+            print('')
             print('*' * 30 + ' [VKOGA] ' + '*' * 30)
             print('Training model with')
             print('       |_ kernel              : %s' % self.kernel)
@@ -176,115 +174,3 @@ class vkoga(BaseEstimator):
 
 
 
-#%%
-from kernels import polynomial
-ker = RBF(rbf_type='gauss', ep=4)
-#kernel = RBF(rbf_type='mat2', ep=4)
-#ker = RBF(rbf_type='wen', ep=4)
-#ker = polynomial(a=0, p=2)
-
-f = lambda x: np.array([np.cos(10 * x), np.sin(10 * x)])[:,:,0].transpose()
-X = np.random.rand(10000, 2)
-y = X
-
-model = vkoga(kernel=ker)
-
-_, f_max, p_max = model.fit(X, y)
-
-X_te = np.random.rand(10000, 2)
-s_te = model.predict(X_te)
-y_te = X_te
-s = model.predict(X)
-
-
-#%%
-fig = plt.figure(1)
-fig.clf()
-ax = fig.gca()
-#ax.plot(X[:, 0], X[:, 1], '.')
-ax.plot(model.ctrs_[:, 0], model.ctrs_[:, 1], '.')
-ax.legend(['All points', 'Selected points'])
-ax.grid()
-fig.show()
-
-fig = plt.figure(2)
-fig.clf()
-ax = fig.gca()
-ax.loglog(f_max)
-ax.loglog(p_max)
-ax.legend(['f_max', 'p_max'])
-ax.grid()
-fig.show()
-
-
-
-
-    
-#from kernels import RBF, polynomial
-#ker = RBF(rbf_type='gauss', ep=4)
-##ker = polynomial(a=1, p=5)
-#
-#f = lambda x: np.array([np.cos(10 * x), np.sin(10 * x)])[:,:,0].transpose()
-#X = np.linspace(-1, 1, 10000)[:, None]
-#y = f(X)
-#
-#model = vkoga(ker)
-#
-#_, f_max, p_max = model.fit(X, y)
-#
-#X_te = np.linspace(-1, 1, 1000)[:, None]
-#s_te = model.predict(X_te)
-#y_te = f(X_te)
-#s = model.predict(X)
-#
-##y_predicted = vkoga(C=100).fit(X_train, y_train).predict(X_test)
-#
-##%%
-#fig = plt.figure(1)
-#fig.clf()
-#ax = fig.add_subplot(2, 1, 1)
-#ax.plot(X, y[:, 0], 'o')
-#ax.plot(X, s[:, 0], '.')
-#ax.plot(X_te, y_te[:, 0], '-')
-#ax.plot(X_te, s_te[:, 0], '-')
-#ax.legend(['Train', 'Train prediction', 'Test', 'Test prediction'])
-#ax.grid()
-#
-#ax = fig.add_subplot(2, 1, 2)
-#ax.plot(X, y[:, 1], 'o')
-#ax.plot(X, s[:, 1], '.')
-#ax.plot(X_te, y_te[:, 1], '-')
-#ax.plot(X_te, s_te[:, 1], '-')
-#ax.legend(['Train', 'Train prediction', 'Test', 'Test prediction'])
-#ax.grid()
-##fig.show()
-#
-#fig = plt.figure(2)
-#fig.clf()
-#ax = fig.gca()
-#ax.semilogy(f_max)
-#ax.semilogy(p_max)
-#ax.legend(['f_max', 'p_max'])
-#ax.grid()
-##fig.show()
-
-
-#%%
-from sklearn.model_selection import GridSearchCV
-
-params = {'reg_par': np.logspace(-10, 1, 10)}
-
-#kernel=RBF(), verbose=True, greedy_type='p_greedy', reg_par=0, restr_par=0, tol_f=1e-10, tol_p=1e-10, max_iter=100)
-
-model = GridSearchCV(vkoga(), params, n_jobs=1, cv=5, iid='False', refit=True, scoring='max_error')  
-
-
-model.fit(X, y)
-
-
-
-
-
-
-
-    
