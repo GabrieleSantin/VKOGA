@@ -10,10 +10,18 @@ The best way to start using the algorithm is having a look at the [demo Notebook
 The demo can also be executed online on Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/gabriele.santin%2Fvkoga/master?filepath=demo.ipynb)
 
 
+## How to cite:
+If you use this code in your work, please remember to cite the paper
 
 
-## Literature:
-
+>@TechReport{SaHa2019,
+>  Author                   = {Santin, Gabriele and Haasdonk, Bernard},
+>  Title                    = {Kernel Methods for Surrogate Modeling},
+>  Year                     = {2019},
+>  Number                   = {1907.10556},
+>  Type                     = {ArXiv},
+> Url                      = {https://arxiv.org/abs/1907.10556}
+>}
 
 
 
@@ -22,6 +30,8 @@ The original Matlab version of this software is maintained here:
 [VKOGA](https://gitlab.mathematik.uni-stuttgart.de/pub/ians-anm/vkoga)
 
 
+## Literature:
+The implementation details are from
 
 
 
