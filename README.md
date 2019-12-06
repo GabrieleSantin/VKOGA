@@ -13,7 +13,7 @@ The demo can also be executed online on Binder: [![Binder](https://mybinder.org/
 ## How to cite:
 If you use this code in your work, please cite the paper
 
-G. Santin and B. Haasdonk, [_Kernel Methods for Surrogate Modeling_](https://arxiv.org/abs/1907.10556), ArXiv preprint 1907.10556 (2019)
+> G. Santin and B. Haasdonk, [_Kernel Methods for Surrogate Modeling_](https://arxiv.org/abs/1907.10556), ArXiv preprint 1907.10556 (2019)
 
 
 ```bibtex:
