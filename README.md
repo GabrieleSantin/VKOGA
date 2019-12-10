@@ -11,7 +11,7 @@ The best way to start using the algorithm is having a look at the [demo notebook
 ## How to cite:
 If you use this code in your work, please cite the paper
 
-> G. Santin and B. Haasdonk, [_Kernel Methods for Surrogate Modeling_](https://arxiv.org/abs/1907.10556), ArXiv preprint 1907.10556 (2019)
+> G. Santin and B. Haasdonk, [_Kernel Methods for Surrogate Modeling_](https://arxiv.org/abs/1907.10556), ArXiv preprint 1907.10556 (2019).
 
 
 ```bibtex:
@@ -25,7 +25,7 @@ If you use this code in your work, please cite the paper
 }
 ```
 
-For further details on the algorithm and its implementation, please refer to these papers:
+For further details on the algorithm and its implementation, please refer to the following papers:
 
 > M. Pazouki and R. Schaback, [_Bases for kernel-based spaces_](https://www.sciencedirect.com/science/article/pii/S0377042711002688), J. Comput. Appl. Math., 236, 575-588 (2011).
 
@@ -36,5 +36,4 @@ For further details on the algorithm and its implementation, please refer to the
 > T. Wenzel, G. Santin, B. Haasdonk, [_A novel class of stabilized greedy kernel approximation algorithms: Convergence, stability & uniform point distribution_](https://arxiv.org/abs/1911.04352), ArXiv preprint 1911.04352 (2019).
 
 ## Other implementations:
-The original Matlab version of this software is maintained here:
-[VKOGA](https://gitlab.mathematik.uni-stuttgart.de/pub/ians-anm/vkoga).
+The original Matlab version of this software is maintained [here](https://gitlab.mathematik.uni-stuttgart.de/pub/ians-anm/vkoga).
