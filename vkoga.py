@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
-Created on Sat Oct 26 14:44:27 2019
-
-@author: gab
-'''
 
 from kernels import Gaussian
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
     
-
+# VKOGA implementation
 class VKOGA(BaseEstimator):
-   
-    def __init__(self, kernel=Gaussian(), verbose=True, 
+                                          
+    def __init__(self, kernel=Gaussian(), kernel_par=1,
+                 verbose=True, 
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=100):
         
@@ -25,6 +20,7 @@ class VKOGA(BaseEstimator):
         
         # Set the params defining the method 
         self.kernel = kernel
+        self.kernel_par = kernel_par
         self.greedy_type = greedy_type
         self.reg_par = reg_par
         self.restr_par = restr_par
@@ -35,13 +31,21 @@ class VKOGA(BaseEstimator):
         self.tol_p = tol_p
         
     def selection_rule(self, f, p):
+        if self.restr_par > 0:
+            p_ = np.max(p)
+            restr_idx = np.nonzero(p >= self.restr_par * p_)[0]
+        else:
+            restr_idx = np.arange(len(p))
+
         f = np.sum(f ** 2, axis=1)
         if self.greedy_type == 'f_greedy':
-            idx = np.argmax(f)
+            idx = np.argmax(f[restr_idx])
+            idx = restr_idx[idx]
             f_max = f[idx] 
             p_max = np.max(p)
         elif self.greedy_type == 'fp_greedy':
-            idx = np.argmax(f[:, None] / p)
+            idx = np.argmax(f[restr_idx][:, None] / p[restr_idx])
+            idx = restr_idx[idx]
             f_max = np.max(f)
             p_max = np.max(p)
         elif self.greedy_type == 'p_greedy':
@@ -68,19 +72,21 @@ class VKOGA(BaseEstimator):
         # Get the data dimension        
         N, q = y.shape
 
-        # Check the data dimension
-        if X.shape[0] != N:
-            raise ValueError('X.shape[0] should be the same as y.shape[0]')
-
-
-        self.max_iter = min(self.max_iter, N) #Check
+        self.max_iter = min(self.max_iter, N) 
         
+        self.kernel.set_params(self.kernel_par)
+        
+        if self.greedy_type == 'p_greedy':
+            self.restr_par = 0
         
         indI = []
         notIndI = list(range(N))
         Vx = np.zeros((N, self.max_iter))
-        c = np.zeros((self.max_iter, q))
-
+        if q > 1:
+            c = np.zeros((self.max_iter, q))
+        else:
+            c = np.zeros(self.max_iter)
+            
         f_max = np.zeros((self.max_iter, 1))
         p_max = np.zeros((self.max_iter, 1))
         p = self.kernel.diagonal(X) + self.reg_par
@@ -119,18 +125,18 @@ class VKOGA(BaseEstimator):
             Cut_new_row[:n] = -Vx[indI[n], :n] @ Cut[:n:, :n]
             Cut[n, :n+1] = Cut_new_row / Vx[indI[n], n]      
             # compute the nth coefficient
-            c[n, :] = y[indI[n], :] / np.sqrt(p[indI[n]])
+            c[n] = y[indI[n]] / np.sqrt(p[indI[n]])
             # update the power function
-            p[notIndI] = p[notIndI] - np.atleast_2d(Vx[notIndI, n] ** 2).transpose()
+            p[notIndI] = p[notIndI] - Vx[notIndI, n] ** 2
             # update the residual
-            y[notIndI, :] = y[notIndI, :] - np.atleast_2d(Vx[notIndI, n]).transpose() * np.atleast_2d(c[n, :])
+            y[notIndI] = y[notIndI] - Vx[notIndI, n][:, None] * c[n]
             # remove the nth index from the dictionary
             notIndI.pop(idx)
         else:
             self.print_message('end')              
 
         # Define coefficients and centers
-        c = c[:n+1, :]
+        c = c[:n+1]
         Cut = Cut[:n+1, :n+1]
         indI = indI[:n+1]
         self.coef_ = Cut.transpose() @ c

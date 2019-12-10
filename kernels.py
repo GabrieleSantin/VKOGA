@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from abc import ABC, abstractmethod
 from scipy.spatial import distance_matrix
 import numpy as np
@@ -22,6 +24,10 @@ class Kernel(ABC):
     def __str__(self):
         pass
 
+    @abstractmethod
+    def set_params(self, params):
+        pass
+
 # Abstract RBF
 class RBF(Kernel):
     @abstractmethod    
@@ -32,10 +38,13 @@ class RBF(Kernel):
         return self.rbf(self.ep, distance_matrix(np.atleast_2d(x), np.atleast_2d(y)))
 
     def diagonal(self, X):
-        return np.ones((X.shape[0], 1)) * self.rbf(self.ep, 0)
+        return np.ones(X.shape[0]) * self.rbf(self.ep, 0)
     
     def __str__(self):
      return self.name + ' [gamma = %2.2e]' % self.ep   
+
+    def set_params(self, par):
+        self.ep = par
 
 # Implementation of concrete RBFs
 class Gaussian(RBF):
@@ -109,6 +118,11 @@ class Polynomial(Kernel):
     def __str__(self):
      return 'polynomial' + ' [a = %2.2e, p = %2.2e]' % (self.a, self.p)   
 
+    def set_params(self, par):
+        self.a = par[0]
+        self.p = par[1]
+
+        
 # A demo usage
 def main():
     ker = Gaussian()

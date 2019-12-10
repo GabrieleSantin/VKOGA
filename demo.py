@@ -1,200 +1,229 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec  6 12:25:55 2019
+#!/usr/bin/env python
 
-@author: gab
-"""
+#%%
+## Introduction to the basic usage of a VKOGA model
 
-### TODO: Next steps  
-### TODO:  * reorthogonalization
-### TODO:  * decent comments & documentation
-### TODO:  * guardare check_X_y, check_is_fitted(), ...
-### TODO:  * Check scikit-learn compatibility: https://scikit-learn.org/dev/developers/develop.html
-### TODO:  * Controllare supporto per data scaling con scikit-learn
-### TODO:  * Decidere struttura e fare vero pacchetto
-### TODO:  * Cross validation dei parametri del kernel
-### TODO:  * Restriction parameter
-### TODO:  * input check
-
-
- 
-    
 #%%
 import numpy as np
-from kernels import Polynomial, Gaussian #, Wendland
-from vkoga import VKOGA
 import matplotlib.pyplot as plt
 
 
-ker = Gaussian(ep=4)
-#ker = Wendland(ep=4, d=2, k=0)
-#kernel = RBF(rbf_type='mat2', ep=4)
-#ker = RBF(rbf_type='wen', ep=4)
-#ker = polynomial(a=0, p=2)
-
-f = lambda x: np.array([np.cos(10 * x), np.sin(10 * x)])[:,:,0].transpose()
+#%%
+# Define a dataset `(X, y)` to run some experiments. In this case the map from the inputs to the outputs is just the identity.
 X = np.random.rand(10000, 2)
 y = X
 
-model = VKOGA(kernel=ker)
 
-model.fit(X, y)
-f_max, p_max = model.train_hist['f'], model.train_hist['p']
-
-X_te = np.random.rand(10000, 2)
-s_te = model.predict(X_te)
-y_te = X_te
-s = model.predict(X)
+#%%
+# We split the dataset into a training (90% of the dataset) and a test set (10% of the dataset).
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=2)
 
 
 #%%
-fig = plt.figure(1)
-fig.clf()
-ax = fig.gca()
-#ax.plot(X[:, 0], X[:, 1], '.')
-ax.plot(model.ctrs_[:, 0], model.ctrs_[:, 1], '.')
-ax.legend(['All points', 'Selected points'])
-ax.grid()
-fig.show()
+### Basic training and prediction 
 
-fig = plt.figure(2)
+#%%
+# We start by defining a VKOGA model with default parameters.
+from vkoga import VKOGA
+model = VKOGA()
+
+
+#%%
+# By default, VKOGA uses a Gaussian kernel with shape parameter ep = 1. 
+# The module `kernels` implements an abstact class `Kernel` and the concrete implementation of several kernels.
+# For example, we can redefine the model to use a Gaussian kernel with ep = 4.
+from kernels import Gaussian
+kernel = Gaussian(ep=4)
+#from kernels import Wendland
+#kernel = Wendland(ep=2, k=0, d=2)
+#from kernels import Polynomial
+#kernel = Polynomial(a=0, p=2)
+
+model = VKOGA(kernel=kernel)
+
+
+#%%
+# The VKOGA model can now be trained on the dataset using the `fit` method:
+_ = model.fit(X_train, y_train)
+
+
+#%%
+# The `fit` method prints some info (if `verbose = True`) and it returns the model itself (the omitted first output variable).
+# After training, the information on the training history are stored in `train_hist`.
+f_max, p_max = model.train_hist['f'], model.train_hist['p']
+
+fig = plt.figure(1)
 fig.clf()
 ax = fig.gca()
 ax.loglog(f_max)
 ax.loglog(p_max)
-ax.legend(['f_max', 'p_max'])
+ax.set_xlabel('Training iteration')
+ax.legend(['Max training error', 'Max value of the power function'])
 ax.grid()
-fig.show()
 
 
+#%%
+# After the model is trained, the object `model` stores the coefficients `coef_` and the centers `ctrs_` of the kernel model.
+fig = plt.figure(2)
+fig.clf()
+ax = fig.gca()
+ax.plot(X[:, 0], X[:, 1], '.')
+ax.plot(model.ctrs_[:, 0], model.ctrs_[:, 1], 'o')
+ax.legend(['Training points', 'Selected points'])
+ax.grid()
 
 
-    
-#from kernels import RBF, polynomial
-#ker = RBF(rbf_type='gauss', ep=4)
-##ker = polynomial(a=1, p=5)
-#
-#f = lambda x: np.array([np.cos(10 * x), np.sin(10 * x)])[:,:,0].transpose()
-#X = np.linspace(-1, 1, 10000)[:, None]
-#y = f(X)
-#
-#model = vkoga(ker)
-#
-#_, f_max, p_max = model.fit(X, y)
-#
-#X_te = np.linspace(-1, 1, 1000)[:, None]
-#s_te = model.predict(X_te)
-#y_te = f(X_te)
-#s = model.predict(X)
-#
-##y_predicted = vkoga(C=100).fit(X_train, y_train).predict(X_test)
-#
-##%%
-#fig = plt.figure(1)
-#fig.clf()
-#ax = fig.add_subplot(2, 1, 1)
-#ax.plot(X, y[:, 0], 'o')
-#ax.plot(X, s[:, 0], '.')
-#ax.plot(X_te, y_te[:, 0], '-')
-#ax.plot(X_te, s_te[:, 0], '-')
-#ax.legend(['Train', 'Train prediction', 'Test', 'Test prediction'])
-#ax.grid()
-#
-#ax = fig.add_subplot(2, 1, 2)
-#ax.plot(X, y[:, 1], 'o')
-#ax.plot(X, s[:, 1], '.')
-#ax.plot(X_te, y_te[:, 1], '-')
-#ax.plot(X_te, s_te[:, 1], '-')
-#ax.legend(['Train', 'Train prediction', 'Test', 'Test prediction'])
-#ax.grid()
-##fig.show()
-#
-#fig = plt.figure(2)
-#fig.clf()
-#ax = fig.gca()
-#ax.semilogy(f_max)
-#ax.semilogy(p_max)
-#ax.legend(['f_max', 'p_max'])
-#ax.grid()
-##fig.show()
+#%%
+# In this case the model was trained with a fixed set of parameters. 
+# The value of all the parameters can be obtained using the `get_params()` method.
+model.get_params()
 
 
-##%%
-#from sklearn.model_selection import GridSearchCV
-#from sklearn.metrics import make_scorer
-#
-#def vectorial_max_error(y_true, y_pred):
-#    return np.max(np.sum((y_true - y_pred) ** 2, axis=1))
-#
-#vectorial_score = make_scorer(vectorial_max_error, greater_is_better=False)
-#
-#params = {'reg_par': np.logspace(-10, 1, 12)}
-#
-##kernel=RBF(), verbose=True, greedy_type='p_greedy', reg_par=0, restr_par=0, tol_f=1e-10, tol_p=1e-10, max_iter=100)
-#  
-#
-#model = GridSearchCV(vkoga(verbose=False), params, n_jobs=1, cv=5, refit=True, verbose=2, scoring=vectorial_score)  
-#
-#
-#model.fit(X, y)
-#
-#model.predict(X)
-#
-#
-#import pandas as pd
-#pd.DataFrame(model.cv_results_)
-#
-#
-##%%
-## Solution from 
-## https://stackoverflow.com/questions/49538120/how-to-implement-a-log-uniform-distribution-in-scipy
-#
-#import numpy as np
-#import scipy as sp
-#
-#class log_uniform():        
-#    def __init__(self, a=-1, b=0, base=10):
-#        self.loc = a
-#        self.scale = b - a
-#        self.base = base
-#
-#    def rvs(self, size=None, random_state=None):
-#        uniform = sp.stats.uniform(loc=self.loc, scale=self.scale)
-#        if size is None:
-#            return np.power(self.base, uniform.rvs(random_state=random_state))
-#        else:
-#            return np.power(self.base, uniform.rvs(size=size, random_state=random_state))
-#        
-#        
-##%%
-#from sklearn.model_selection import RandomizedSearchCV
-#from sklearn.metrics import make_scorer
-#import scipy.stats as st
-#
-#def vectorial_max_error(y_true, y_pred):
-#    return np.max(np.sum((y_true - y_pred) ** 2, axis=1))
-#
-#vectorial_score = make_scorer(vectorial_max_error, greater_is_better=False)
-#
-#params = {'reg_par': log_uniform(-10, 1)}
-##,
-##          'max_iter': st.randint()}
-#
-##kernel=RBF(), verbose=True, greedy_type='p_greedy', reg_par=0, restr_par=0, tol_f=1e-10, tol_p=1e-10, max_iter=100)
-#  
-#
-#model = RandomizedSearchCV(vkoga(verbose=False), params, n_iter = 10, n_jobs=1, cv=5, refit=True, verbose=2, scoring=vectorial_score)  
-#
-#
-#model.fit(X, y)
-#
-#model.predict(X)
-#
-#
-#import pandas as pd
-#pd.DataFrame(model.cv_results_)
-#
-#
-#
-#    
+#%%
+# These parameters can be set by the constructor (like we did with `kernel` above) or they can be modified with the `set_params()` method.
+model.set_params(tol_f=1e-15)
+
+
+#%%
+# Once a model is trained, it can be used to compute predictions on new input data.
+s_train = model.predict(X_train)
+s_test = model.predict(X_test)
+
+
+#%%
+# And we can compute some errors.
+err_train = np.max(np.linalg.norm(s_train - y_train, axis=1))
+err_test = np.max(np.linalg.norm(s_test - y_test, axis=1))
+print('Training error: %2.2e' % err_train)
+print('Test error    : %2.2e' % err_test)
+
+
+#%%
+# Quick usage
+
+
+#%%
+# All these operations can also be condensed in a single line.
+s_test = VKOGA(kernel=kernel).fit(X_train, y_train).predict(X_test)
+
+
+#%%
+# Refined training with parameter optimization
+
+
+#%%
+# The VKOGA models are compatible with scikit-learn interfaces, and in particular their parameters can be optimized with scikit-learn tools.
+# First, one needs to define a score function to rank the models. The following is a simple vectorial version of the `max_error` scorer.
+from sklearn.metrics import make_scorer
+
+def vectorial_max_error(y_true, y_pred):
+    return np.max(np.sum((y_true - y_pred) ** 2, axis=1))
+
+vectorial_score = make_scorer(vectorial_max_error, greater_is_better=False)
+
+
+#%% Deterministic parameter optimization
+
+
+#%%
+# For a deterministic parameter optimization, we first define a parameter search set.
+params = {
+        'reg_par': np.logspace(-16, 0, 5),
+        'kernel_par': np.logspace(-1, 1, 5)
+        }
+  
+
+#%%
+# Then, we define the VKOGA model as a `GridSearchCV` object. In this case we run a 5-fold cross validation over the parameter set, using all the available cores (`n_jobs=-1`), and refitting the model on the entire training set after the validation is concluded. 
+from sklearn.model_selection import GridSearchCV
+
+model = GridSearchCV(VKOGA(verbose=False), params, scoring=vectorial_score, 
+                     n_jobs=-1, cv=5, refit=True, verbose=1)  
+
+
+#%%
+# The model can be trained as before, but now in addition a deterministic cross validation is run to optimize the specified parameters.
+model.fit(X, y)
+
+
+#%%
+# The parameters selected by the optimization are accessible as `best_params_`.
+model.best_params_
+
+
+#%%
+# The detailed results of the parameter optimization process are instead in `cv_results_`.
+import pandas as pd
+pd.DataFrame(model.cv_results_)
+
+
+#%%
+# The trained model can be used as before to compute predictions.
+s_train = model.predict(X_train)
+s_test = model.predict(X_test)
+err_train = np.max(np.linalg.norm(s_train - y_train, axis=1))
+err_test = np.max(np.linalg.norm(s_test - y_test, axis=1))
+print('Training error: %2.2e' % err_train)
+print('Test error    : %2.2e' % err_test)
+
+
+#%% Randomized parameter optimization
+
+
+#%%
+# In this case the parameters are randomly sampled according to some distribution, instead than on a grid.
+from utils import log_uniform
+        
+params = {'reg_par': log_uniform(-16, 1), 
+         'kernel_par': log_uniform(-1, 1)
+         }
+
+
+#%%
+# The VKOGA model is now defined as a `RandomizedSearchCV` object. In addition to the deterministic case, we need also to specify the number of samples to take from the parameter space (`n_iter=25`).
+from sklearn.model_selection import RandomizedSearchCV
+
+model = RandomizedSearchCV(VKOGA(verbose=False), params, scoring=vectorial_score, n_iter = 25, 
+                           n_jobs=-1, cv=5, refit=True, verbose=1)
+
+
+#%%
+# Same training (with parameter optimization), parameter inspection and prediction as in the deterministic case
+model.fit(X, y)
+
+model.best_params_
+
+pd.DataFrame(model.cv_results_).head()
+
+s_train = model.predict(X_train)
+s_test = model.predict(X_test)
+err_train = np.max(np.linalg.norm(s_train - y_train, axis=1))
+err_test = np.max(np.linalg.norm(s_test - y_test, axis=1))
+print('Training error: %2.2e' % err_train)
+print('Test error    : %2.2e' % err_test)
+
+
+#%% Data preparation
+
+
+#%%
+# Scikit-learn provides also tools to preprocess the data.
+# For example it is possible to define a scaler to normalize the data.
+from sklearn import preprocessing
+input_scaler = preprocessing.StandardScaler().fit(X_train)
+
+
+#%%
+# Or to scale them into a specific interval.
+input_scaler = preprocessing.MinMaxScaler(feature_range=(-1,1)).fit(X_train)
+
+
+#%%
+# Then, one can use the same scaler to compute predictions.
+s_test = VKOGA().fit(input_scaler.transform(X_train), y_train).predict(input_scaler.transform(X_test))
+
+
+#%%
+# The same can be done also on the output data.
+
