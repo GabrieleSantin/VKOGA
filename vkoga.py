@@ -13,8 +13,6 @@ class VKOGA(BaseEstimator):
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=100):
         
-        super(VKOGA, self).__init__()
-        
         # Set the verbosity on/off
         self.verbose = verbose
         
@@ -117,9 +115,6 @@ class VKOGA(BaseEstimator):
             Vx[indI[n], n] += self.reg_par
             # normalize the nth basis
             Vx[notIndI, n] = Vx[notIndI, n] / np.sqrt(p[indI[n]])
-#           reorthogonalization 
-#           if n > 2:
-#                breakpoint()
             # update the change of basis
             Cut_new_row = np.ones(n + 1)
             Cut_new_row[:n] = -Vx[indI[n], :n] @ Cut[:n:, :n]
