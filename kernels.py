@@ -103,7 +103,8 @@ class Wendland(RBF):
         e = l + k
         self.rbf = lambda ep, r: np.maximum(1 - ep * r, 0) ** e * p(ep * r) / c
     
-# Polynomial kernels    
+
+ # Polynomial kernels    
 class Polynomial(Kernel):
     def __init__(self, a=0, p=1):
         self.a = a
@@ -135,7 +136,7 @@ def main():
     fig = plt.figure(1)
     fig.clf()
     ax = fig.gca()
-    ax.plot(A)
+    ax.plot(x, A)
     ax.set_title('A kernel: ' + str(ker))
     fig.show()
 

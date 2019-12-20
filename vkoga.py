@@ -74,8 +74,12 @@ class VKOGA(BaseEstimator):
         
         self.kernel.set_params(self.kernel_par)
         
+        # Check compatibility of restriction
         if self.greedy_type == 'p_greedy':
             self.restr_par = 0
+        if not self.reg_par == 0:
+            self.restr_par = 0
+            
         
         indI = []
         notIndI = list(range(N))
