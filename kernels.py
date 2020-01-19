@@ -77,6 +77,9 @@ class Matern(RBF):
         elif k == 2:
             self.name = 'mat2'
             self.rbf = lambda ep, r: np.exp(-ep * r) * (3 + 3 * ep * r + (ep * r) ** 2)
+        elif k == 3:
+            self.name = 'mat3'
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (15 + 15 * ep * r + 6 * (ep * r) ** 2 + (ep * r) ** 3)
         else:
             self.name = None
             self.rbf = None

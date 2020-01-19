@@ -11,7 +11,7 @@ class VKOGA(BaseEstimator):
     def __init__(self, kernel=Gaussian(), kernel_par=1,
                  verbose=True, 
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
-                 tol_f=1e-10, tol_p=1e-10, max_iter=100):
+                 tol_f=1e-10, tol_p=1e-10, max_iter=10):
         
         # Set the verbosity on/off
         self.verbose = verbose
@@ -79,7 +79,6 @@ class VKOGA(BaseEstimator):
             self.restr_par = 0
         if not self.reg_par == 0:
             self.restr_par = 0
-            
         
         indI = []
         notIndI = list(range(N))
@@ -89,8 +88,6 @@ class VKOGA(BaseEstimator):
         else:
             c = np.zeros(self.max_iter)
             
-        f_max = np.zeros((self.max_iter, 1))
-        p_max = np.zeros((self.max_iter, 1))
         p = self.kernel.diagonal(X) + self.reg_par
         Cut = np.zeros((self.max_iter, self.max_iter))       
         
@@ -140,14 +137,12 @@ class VKOGA(BaseEstimator):
         indI = indI[:n+1]
         self.coef_ = Cut.transpose() @ c
         self.ctrs_ = X[indI, :]
-        f_max = np.sqrt(f_max[:n+1])
-        p_max = np.sqrt(p_max[:n+1])
 
         return self
 
 
     def predict(self, X):
-        # Check is fit had been called
+        # Check is fit has been called
         check_is_fitted(self, 'coef_')
 
         # Validate the input
