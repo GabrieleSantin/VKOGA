@@ -33,8 +33,11 @@ class RandomDictionary(Dictionary):
         self.d = d
         
     def sample(self):
-        return np.random.rand(self.n, self.d)
-    
+        r = np.random.rand(self.n, 1)
+        theta = 2 * np.pi * np.random.rand(self.n)
+        return np.sqrt(r) * np.c_[np.cos(theta), np.sin(theta)]
+        
+#        return np.random.rand(self.n, self.d)
 
 
 # Pgreedy implementation
@@ -45,11 +48,14 @@ class PGreedy(BaseEstimator):
     
     
     def __init__(self, kernel=Gaussian(), kernel_par=1,
-                 verbose=True, 
+                 verbose=True, n_report = 100,
                  tol_p=1e-10, max_iter=100):
         
         # Set the verbosity on/off
         self.verbose = verbose
+  
+        # Set the frequency of report
+        self.n_report = n_report
         
         # Set the params defining the method 
         self.kernel = kernel
@@ -68,7 +74,7 @@ class PGreedy(BaseEstimator):
 
         return X[idx], p_X[idx]
 
-    def fit(self, dictionary):
+    def fit(self, dictionary, reorth):
         # Initialize the convergence history (cold start)
         self.train_hist = {}
         self.train_hist['n'] = []
@@ -102,18 +108,28 @@ class PGreedy(BaseEstimator):
             
             # Evaluate the first (n-1) bases on the selected point
             if n > 0:
-                Vx_n_1 = self.kernel.eval(x, self.ctrs_) @ self.Cut_[:n, :n].transpose() 
+                Vx = self.kernel.eval(x, self.ctrs_) @ self.Cut_[:n, :n].transpose() 
             
             # Update the change of basis
             self.Cut_ = np.r_[np.c_[self.Cut_, np.zeros((n, 1))], np.zeros((1, n + 1))]
             new_row = np.ones((1, n + 1))
             if n > 0:
-                new_row[0, :n] = (-Vx_n_1 @ self.Cut_[:n, :n])
+                new_row[0, :n] = (-Vx @ self.Cut_[:n, :n])
             self.Cut_[n, :] = new_row / np.sqrt(self.train_hist['p'][n])
+
+#            if reorth == 1 and n > 0:
+#                xx = np.sqrt(self.kernel.eval(x, x) - np.sum(Vx ** 2))
+#                self.Cut_[n, -1] = 1 / xx
+#                self.Cut_[n, :-1] = -(self.Cut_[:n, :n].transpose() @ Vx.transpose()).transpose() / xx
+                
             
             # Add the current point to the selected centers
             self.ctrs_ = np.append(self.ctrs_, x[:, None].transpose(), axis=0)
             
+            # Report some data every now and then
+            if n % self.n_report == 0:
+                self.print_message('track')              
+
         else:
             self.print_message('end')              
 
@@ -171,10 +187,15 @@ class PGreedy(BaseEstimator):
             print('')
             
         if self.verbose and when == 'end':
+            print('')
             print('Training completed with')
             print('       |_ selected points     : %8d / %8d' % (self.train_hist['n'][-1], self.max_iter))
             print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
             
+        if self.verbose and when == 'track':
+            print('Training ongoing with')
+            print('       |_ selected points     : %8d / %8d' % (self.train_hist['n'][-1], self.max_iter))
+            print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
 
 
 

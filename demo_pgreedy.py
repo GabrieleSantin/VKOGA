@@ -16,7 +16,7 @@ from pgreedy import RandomDictionary, DeterministicDictionary
 
 d = 2
 n_random = 1000
-max_iter = 100
+max_iter = int(1e5)
 
 #X = np.random.rand(10000, d)
 #dictionary = DeterministicDictionary(X)
@@ -25,13 +25,14 @@ dictionary = RandomDictionary(n_random, d)
 
 #%%
 
-#from kernels import Gaussian
-#kernel = Gaussian(ep=1)
+from kernels import Gaussian
+kernel = Gaussian()
+ep = 5
 
-from kernels import Wendland
-k = 3
-kernel = Wendland(ep=.1, k=k, d=2)
-exponent = (k + 2) / d - 1 / 2
+#from kernels import Wendland
+#k = 3
+#kernel = Wendland(ep=.1, k=k, d=2)
+#exponent = (k + 2) / d - 1 / 2
 
 #from kernels import Matern
 #k = 3
@@ -43,14 +44,17 @@ exponent = (k + 2) / d - 1 / 2
 
 
 #%%
-model = PGreedy(kernel=kernel, max_iter=max_iter)
-model.fit(dictionary)
+model = PGreedy(kernel=kernel, kernel_par=ep, max_iter=max_iter, tol_p=1e-14)
+model.fit(dictionary, 0)
 
 
 #%%
 p_max = []
 np.random.seed(0)
-Xte = np.random.rand(10000, d)
+
+#Xte = np.random.rand(10000, d)
+dictionary = RandomDictionary(10000, d)
+Xte = dictionary.sample()
 
 p_max = np.sqrt(model.predict_max(Xte, model.ctrs_.shape[0]))
  
@@ -81,7 +85,7 @@ else:
 
 #%%   
 fig = plt.figure(1)
-#fig.clf()
+fig.clf()
 ax = fig.gca()
 if kernel.name == 'gauss':
     ax.semilogy(p_max, '.-')
@@ -98,9 +102,20 @@ if d == 2:
     fig = plt.figure(2)
     fig.clf()
     ax = fig.gca()
-    ax.plot(model.ctrs_[:, 0], model.ctrs_[:, 1], 'o')
+    ax.plot(model.ctrs_[:, 0], model.ctrs_[:, 1], '.')
     ax.legend(['Selected points'])
     ax.grid()
+    ax.axis('equal')
+
+#%%
+#fig = plt.figure(3)
+#fig.clf()
+#ax = fig.gca()
+#ax.legend(['Selected points'])
+#ax.grid()
+#for k in range(n):    
+#    ax.plot(model.ctrs_[k, 0], model.ctrs_[k, 1], '.')
+#    plt.pause(0.1)
 
 
 ##%%
@@ -110,3 +125,29 @@ if d == 2:
 ##ax.plot(np.arange(4), E, 'o-')
 #ax.plot(np.arange(4), np.polyval(cc, np.arange(4)))
 #ax.grid()
+
+
+#%% Orthogonality check
+A = model.kernel.eval(model.ctrs_, model.ctrs_)
+
+G = model.Cut_ @ A @ model.Cut_.transpose()    
+    
+fig = plt.figure(4)
+fig.clf()
+ax = fig.gca()
+ax.grid()
+ax.plot(G.transpose()) 
+    
+print('Max abs (1 - diagonal) = %2.2e' % np.max(np.abs(1 - np.diag(G))))    
+print('Max abs off diagonal = %2.2e' % np.max(np.abs(G - np.diag(np.diag(G)))))    
+print('Norm(G - eye(n)) = %2.2e' % np.linalg.norm(G - np.eye(n, n)))    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
