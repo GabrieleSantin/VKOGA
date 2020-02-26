@@ -4,41 +4,7 @@ from kernels import Gaussian
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_is_fitted
-from abc import ABC, abstractmethod
     
-
-class Dictionary(ABC):
-    @abstractmethod    
-    def __init__(self):
-        super().__init__()
-    
-    @abstractmethod
-    def sample(self):
-        pass
-
-class DeterministicDictionary(Dictionary):
-    def __init__(self, X):
-        super().__init__()
-        self.X = X
-        self.d = self.X.shape[0]
-        
-    def sample(self):
-        return self.X
-
-    
-class RandomDictionary(Dictionary):
-    def __init__(self, n, d):
-        super().__init__()
-        self.n = n
-        self.d = d
-        
-    def sample(self):
-        r = np.random.rand(self.n, 1)
-        theta = 2 * np.pi * np.random.rand(self.n)
-        return np.sqrt(r) * np.c_[np.cos(theta), np.sin(theta)]
-        
-#        return np.random.rand(self.n, self.d)
-
 
 # Pgreedy implementation
 class PGreedy(BaseEstimator):
@@ -48,7 +14,7 @@ class PGreedy(BaseEstimator):
     
     
     def __init__(self, kernel=Gaussian(), kernel_par=1,
-                 verbose=True, n_report = 100,
+                 verbose=True, n_report=100,
                  tol_p=1e-10, max_iter=100):
         
         # Set the verbosity on/off
@@ -152,7 +118,9 @@ class PGreedy(BaseEstimator):
             n = np.atleast_2d(self.ctrs_).shape[0]
         
         # Evaluate the power function on the input
-        return self.kernel.diagonal(X) - np.sum((self.kernel.eval(X, np.atleast_2d(self.ctrs_)[:n]) @ self.Cut_[:n, :n].transpose()) ** 2, axis=1)     
+        p = self.kernel.diagonal(X) - np.sum((self.kernel.eval(X, np.atleast_2d(self.ctrs_)[:n]) @ self.Cut_[:n, :n].transpose()) ** 2, axis=1)
+        
+        return p     
         
 
 

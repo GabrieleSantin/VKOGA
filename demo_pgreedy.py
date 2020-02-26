@@ -12,26 +12,31 @@ from pgreedy import PGreedy
 
 
 #%%
-from pgreedy import RandomDictionary, DeterministicDictionary
-
 d = 2
 n_random = 1000
-max_iter = int(1e5)
+max_iter = int(1e4)
+tol_p = 1e-12
+
+from dictionary import RandomDictionarySquare, RandomDictionaryDisk, DeterministicDictionary, RandomDictionarySphere, RandomDictionaryThorus
 
 #X = np.random.rand(10000, d)
 #dictionary = DeterministicDictionary(X)
-dictionary = RandomDictionary(n_random, d)
+dictionary = RandomDictionaryDisk(n_random)
+#dictionary = RandomDictionaryThorus(n_random)
+
+#dictionary_test = RandomDictionaryThorus(10000)
+dictionary_test = RandomDictionaryDisk(10000)
 
 
 #%%
+#from kernels import Gaussian
+#kernel = Gaussian()
+#ep = 1
 
-from kernels import Gaussian
-kernel = Gaussian()
-ep = 5
-
-#from kernels import Wendland
-#k = 3
-#kernel = Wendland(ep=.1, k=k, d=2)
+from kernels import Wendland
+k = 3
+ep = .1
+kernel = Wendland(k=k, d=2)
 #exponent = (k + 2) / d - 1 / 2
 
 #from kernels import Matern
@@ -44,7 +49,7 @@ ep = 5
 
 
 #%%
-model = PGreedy(kernel=kernel, kernel_par=ep, max_iter=max_iter, tol_p=1e-14)
+model = PGreedy(kernel=kernel, kernel_par=ep, max_iter=max_iter, tol_p=tol_p)
 model.fit(dictionary, 0)
 
 
@@ -52,17 +57,15 @@ model.fit(dictionary, 0)
 p_max = []
 np.random.seed(0)
 
-#Xte = np.random.rand(10000, d)
-dictionary = RandomDictionary(10000, d)
-Xte = dictionary.sample()
+Xte = dictionary_test.sample()
 
 p_max = np.sqrt(model.predict_max(Xte, model.ctrs_.shape[0]))
  
     
 #%%
 n = model.ctrs_.shape[0]
-tail = int(np.ceil(0.4 * n))
-nn = np.arange(n - tail, n)
+tail = int(np.ceil(0.3 * n))
+nn = np.arange(n - tail, n )
 
 if kernel.name == 'gauss':
 #    c = np.polyfit(np.sqrt(nn), np.log(p_max[-tail:]), 1)
@@ -106,6 +109,16 @@ if d == 2:
     ax.legend(['Selected points'])
     ax.grid()
     ax.axis('equal')
+elif d == 3:
+    from mpl_toolkits.mplot3d import Axes3D
+    fig = plt.figure(2)
+    fig.clf()
+    ax = fig.gca(projection='3d')
+    ax.plot(model.ctrs_[:, 0], model.ctrs_[:, 1], model.ctrs_[:, 2], '.')
+    ax.legend(['Selected points'])
+    ax.grid()
+#    ax.axis('equal')
+
 
 #%%
 #fig = plt.figure(3)

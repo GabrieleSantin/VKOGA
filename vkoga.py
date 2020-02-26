@@ -9,12 +9,15 @@ from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 class VKOGA(BaseEstimator):
                                           
     def __init__(self, kernel=Gaussian(), kernel_par=1,
-                 verbose=True, 
+                 verbose=True, n_report=10,
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=10):
         
         # Set the verbosity on/off
         self.verbose = verbose
+        
+        # Set the frequency of report
+        self.n_report = n_report
         
         # Set the params defining the method 
         self.kernel = kernel
@@ -128,6 +131,11 @@ class VKOGA(BaseEstimator):
             y[notIndI] = y[notIndI] - Vx[notIndI, n][:, None] * c[n]
             # remove the nth index from the dictionary
             notIndI.pop(idx)
+            
+            # Report some data every now and then
+            if n % self.n_report == 0:
+                self.print_message('track')              
+
         else:
             self.print_message('end')              
 
@@ -168,7 +176,14 @@ class VKOGA(BaseEstimator):
             print('       |_ selected points     : %8d / %8d' % (self.train_hist['n'][-1], self.max_iter))
             print('       |_ train residual      : %2.2e / %2.2e' % (self.train_hist['f'][-1], self.tol_f))
             print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
-            
+                        
+        if self.verbose and when == 'track':
+            print('Training ongoing with')
+            print('       |_ selected points     : %8d / %8d' % (self.train_hist['n'][-1], self.max_iter))
+            print('       |_ train residual      : %2.2e / %2.2e' % (self.train_hist['f'][-1], self.tol_f))
+            print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
+
+
 
 
 
