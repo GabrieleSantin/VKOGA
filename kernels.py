@@ -5,7 +5,6 @@ from scipy.spatial import distance_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # Abstract kernel
 class Kernel(ABC):
     @abstractmethod    
@@ -15,6 +14,17 @@ class Kernel(ABC):
     @abstractmethod
     def eval(self):
         pass
+
+    def eval_prod(self, x, y, v, batch_size=100):
+        N = x.shape[0]
+        num_batches = int(np.ceil(N / batch_size))
+        mat_vec_prod = np.zeros((N, 1)) 
+        for idx in range(num_batches):
+            idx_begin = idx * batch_size
+            idx_end = (idx + 1) * batch_size
+            A = self.eval(x[idx_begin:idx_end, :], y)
+            mat_vec_prod[idx_begin:idx_end] = A @ v
+        return mat_vec_prod
 
     @abstractmethod
     def diagonal(self, X):

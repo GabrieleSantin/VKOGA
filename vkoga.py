@@ -45,7 +45,7 @@ class VKOGA(BaseEstimator):
             f_max = f[idx] 
             p_max = np.max(p)
         elif self.greedy_type == 'fp_greedy':
-            idx = np.argmax(f[restr_idx][:, None] / p[restr_idx])
+            idx = np.argmax(f[restr_idx] / p[restr_idx])
             idx = restr_idx[idx]
             f_max = np.max(f)
             p_max = np.max(p)
@@ -83,7 +83,7 @@ class VKOGA(BaseEstimator):
         if not self.reg_par == 0:
             self.restr_par = 0
         
-        indI = []
+        self.indI_  = []
         notIndI = list(range(N))
         Vx = np.zeros((N, self.max_iter))
         if q > 1:
@@ -92,7 +92,7 @@ class VKOGA(BaseEstimator):
             c = np.zeros(self.max_iter)
             
         p = self.kernel.diagonal(X) + self.reg_par
-        Cut = np.zeros((self.max_iter, self.max_iter))       
+        self.Cut_ = np.zeros((self.max_iter, self.max_iter))       
         
         self.print_message('begin')
         # Iterative selection of new points
@@ -104,7 +104,7 @@ class VKOGA(BaseEstimator):
             # select the current index
             idx, self.train_hist['f'][n], self.train_hist['p'][n] = self.selection_rule(y[notIndI], p[notIndI])
             # add the current index
-            indI.append(notIndI[idx])
+            self.indI_ .append(notIndI[idx])
             # check if the tolerances are reacheded
             if self.train_hist['f'][n] <= self.tol_f:
                 n = n - 1
@@ -115,16 +115,16 @@ class VKOGA(BaseEstimator):
                 self.print_message('end')   
                 break
             # compute the nth basis
-            Vx[notIndI, n] = self.kernel.eval(X[notIndI, :], X[indI[n],:])[:, 0] - Vx[notIndI, :n+1] @ Vx[indI[n], 0:n+1].transpose()
-            Vx[indI[n], n] += self.reg_par
+            Vx[notIndI, n] = self.kernel.eval(X[notIndI, :], X[self.indI_ [n],:])[:, 0] - Vx[notIndI, :n+1] @ Vx[self.indI_ [n], 0:n+1].transpose()
+            Vx[self.indI_ [n], n] += self.reg_par
             # normalize the nth basis
-            Vx[notIndI, n] = Vx[notIndI, n] / np.sqrt(p[indI[n]])
+            Vx[notIndI, n] = Vx[notIndI, n] / np.sqrt(p[self.indI_ [n]])
             # update the change of basis
             Cut_new_row = np.ones(n + 1)
-            Cut_new_row[:n] = -Vx[indI[n], :n] @ Cut[:n:, :n]
-            Cut[n, :n+1] = Cut_new_row / Vx[indI[n], n]      
+            Cut_new_row[:n] = -Vx[self.indI_ [n], :n] @ self.Cut_[:n:, :n]
+            self.Cut_[n, :n+1] = Cut_new_row / Vx[self.indI_ [n], n]      
             # compute the nth coefficient
-            c[n] = y[indI[n]] / np.sqrt(p[indI[n]])
+            c[n] = y[self.indI_ [n]] / np.sqrt(p[self.indI_ [n]])
             # update the power function
             p[notIndI] = p[notIndI] - Vx[notIndI, n] ** 2
             # update the residual
@@ -141,10 +141,10 @@ class VKOGA(BaseEstimator):
 
         # Define coefficients and centers
         c = c[:n+1]
-        Cut = Cut[:n+1, :n+1]
-        indI = indI[:n+1]
-        self.coef_ = Cut.transpose() @ c
-        self.ctrs_ = X[indI, :]
+        self.Cut_ = self.Cut_[:n+1, :n+1]
+        self.indI_  = self.indI_ [:n+1]
+        self.coef_ = self.Cut_.transpose() @ c
+        self.ctrs_ = X[self.indI_ , :]
 
         return self
 
@@ -158,7 +158,7 @@ class VKOGA(BaseEstimator):
    
         # Evaluate the model
         return self.kernel.eval(X, self.ctrs_) @ self.coef_     
-
+        ### TODO: replace with eval prod
 
     def print_message(self, when):
         
@@ -184,6 +184,16 @@ class VKOGA(BaseEstimator):
             print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
 
 
+#%% Utilities to 
+import pickle
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+def load_object(filename):        
+    with open(filename, 'rb') as input:
+        obj = pickle.load(input)    
+    return obj
 
 
 
