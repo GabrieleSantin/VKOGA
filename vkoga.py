@@ -42,7 +42,7 @@ class VKOGA(BaseEstimator):
         if self.greedy_type == 'f_greedy':
             idx = np.argmax(f[restr_idx])
             idx = restr_idx[idx]
-            f_max = f[idx] 
+            f_max = np.max(f)
             p_max = np.max(p)
         elif self.greedy_type == 'fp_greedy':
             idx = np.argmax(f[restr_idx] / p[restr_idx])
