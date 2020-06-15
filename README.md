@@ -5,7 +5,8 @@ Python implementation of the Vectorial Kernel Orthogonal Greedy Algorithm.
 ## Usage:
 The algorithm is implemented as a [scikit-learn](https://scikit-learn.org/stable/) `Estimator`, and it can be used via the `fit` and `predict` methods.
 
-The best way to start using the algorithm is having a look at the [demo notebook](demo.ipynb), which can also be executed online on Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/GabrieleSantin/VKOGA/master?filepath=https%3A%2F%2Fgithub.com%2FGabrieleSantin%2FVKOGA%2Fmaster%2Fdemo.ipynb)
+The best way to start using the algorithm is having a look at the [demo notebook](demo.ipynb), which can also be executed online on Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/GabrieleSantin/VKOGA/master?filepath=demo.ipynb)
+
 
 
 
