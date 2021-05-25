@@ -127,7 +127,7 @@ class Polynomial(Kernel):
         return (np.atleast_2d(x) @ np.atleast_2d(y).transpose() + self.a) ** self.p
     
     def diagonal(self, X):
-        return ((np.linalg.norm(X, axis=1) + self.a) ** self.p)[:, None]
+        return ((np.linalg.norm(X, axis=1)**2 + self.a) ** self.p)[:, None]
 
     def __str__(self):
      return 'polynomial' + ' [a = %2.2e, p = %2.2e]' % (self.a, self.p)   
