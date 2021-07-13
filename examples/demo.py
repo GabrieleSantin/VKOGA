@@ -173,7 +173,7 @@ print('Test error    : %2.2e' % err_test)
 
 #%%
 # In this case the parameters are randomly sampled according to some distribution, instead than on a grid.
-from utils import log_uniform
+from vkoga.utils import log_uniform
         
 params = {'reg_par': log_uniform(-16, 1), 
          'kernel_par': log_uniform(-1, 1)
