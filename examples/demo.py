@@ -25,7 +25,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_
 
 #%%
 # We start by defining a VKOGA model with default parameters.
-from vkoga import VKOGA
+from vkoga.vkoga import VKOGA
 model = VKOGA()
 
 
@@ -33,11 +33,11 @@ model = VKOGA()
 # By default, VKOGA uses a Gaussian kernel with shape parameter ep = 1. 
 # The module `kernels` implements an abstact class `Kernel` and the concrete implementation of several kernels.
 # For example, we can redefine the model to use a Gaussian kernel with ep = 4.
-from kernels import Gaussian
+from vkoga.kernels import Gaussian
 kernel = Gaussian(ep=4)
-#from kernels import Wendland
+#from vkoga.kernels import Wendland
 #kernel = Wendland(ep=2, k=0, d=2)
-#from kernels import Polynomial
+#from vkoga.kernels import Polynomial
 #kernel = Polynomial(a=0, p=2)
 
 model = VKOGA(kernel=kernel)
@@ -173,7 +173,7 @@ print('Test error    : %2.2e' % err_test)
 
 #%%
 # In this case the parameters are randomly sampled according to some distribution, instead than on a grid.
-from utils import log_uniform
+from vkoga.utils import log_uniform
         
 params = {'reg_par': log_uniform(-16, 1), 
          'kernel_par': log_uniform(-1, 1)

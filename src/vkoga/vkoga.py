@@ -1,36 +1,36 @@
 #!/usr/bin/env python3
 
-from kernels import Gaussian
+from .kernels import Gaussian
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
-    
+
 # VKOGA implementation
 class VKOGA(BaseEstimator):
-                                          
+
     def __init__(self, kernel=Gaussian(), kernel_par=1,
                  verbose=True, n_report=10,
                  greedy_type='p_greedy', reg_par=0, restr_par=0, 
                  tol_f=1e-10, tol_p=1e-10, max_iter=10):
-        
+
         # Set the verbosity on/off
         self.verbose = verbose
-        
+
         # Set the frequency of report
         self.n_report = n_report
-        
+
         # Set the params defining the method 
         self.kernel = kernel
         self.kernel_par = kernel_par
         self.greedy_type = greedy_type
         self.reg_par = reg_par
         self.restr_par = restr_par
-        
+
         # Set the stopping values
         self.max_iter = max_iter
         self.tol_f = tol_f
         self.tol_p = tol_p
-        
+
     def selection_rule(self, f, p):
         if self.restr_par > 0:
             p_ = np.max(p)
@@ -58,31 +58,31 @@ class VKOGA(BaseEstimator):
     def fit(self, X, y):
         # Check the dataset
         X, y = check_X_y(X, y, multi_output=True)
-        
+
         # Initialize the convergence history (cold start)
         self.train_hist = {}
         self.train_hist['n'] = []
         self.train_hist['f'] = []
         self.train_hist['p'] = []
-        
+
         # Initialize the residual
         y = np.array(y)
         if len(y.shape) == 1:
             y = y[:, None]
-        
-        # Get the data dimension        
+
+        # Get the data dimension
         N, q = y.shape
 
         self.max_iter = min(self.max_iter, N) 
-        
+
         self.kernel.set_params(self.kernel_par)
-        
+
         # Check compatibility of restriction
         if self.greedy_type == 'p_greedy':
             self.restr_par = 0
         if not self.reg_par == 0:
             self.restr_par = 0
-        
+
         self.indI_  = []
         notIndI = list(range(N))
         Vx = np.zeros((N, self.max_iter))
@@ -90,10 +90,10 @@ class VKOGA(BaseEstimator):
             c = np.zeros((self.max_iter, q))
         else:
             c = np.zeros(self.max_iter)
-            
+
         p = self.kernel.diagonal(X) + self.reg_par
-        self.Cut_ = np.zeros((self.max_iter, self.max_iter))       
-        
+        self.Cut_ = np.zeros((self.max_iter, self.max_iter))
+
         self.print_message('begin')
         # Iterative selection of new points
         for n in range(self.max_iter):
@@ -122,7 +122,7 @@ class VKOGA(BaseEstimator):
             # update the change of basis
             Cut_new_row = np.ones(n + 1)
             Cut_new_row[:n] = -Vx[self.indI_ [n], :n] @ self.Cut_[:n:, :n]
-            self.Cut_[n, :n+1] = Cut_new_row / Vx[self.indI_ [n], n]      
+            self.Cut_[n, :n+1] = Cut_new_row / Vx[self.indI_ [n], n]
             # compute the nth coefficient
             c[n] = y[self.indI_ [n]] / np.sqrt(p[self.indI_ [n]])
             # update the power function
@@ -131,13 +131,13 @@ class VKOGA(BaseEstimator):
             y[notIndI] = y[notIndI] - Vx[notIndI, n][:, None] * c[n]
             # remove the nth index from the dictionary
             notIndI.pop(idx)
-            
+
             # Report some data every now and then
             if n % self.n_report == 0:
-                self.print_message('track')              
+                self.print_message('track') 
 
         else:
-            self.print_message('end')              
+            self.print_message('end')
 
         # Define coefficients and centers
         c = c[:n+1]
@@ -157,11 +157,11 @@ class VKOGA(BaseEstimator):
         X = check_array(X)
    
         # Evaluate the model
-        return self.kernel.eval(X, self.ctrs_) @ self.coef_     
+        return self.kernel.eval(X, self.ctrs_) @ self.coef_ 
         ### TODO: replace with eval prod
 
     def print_message(self, when):
-        
+
         if self.verbose and when == 'begin':
             print('')
             print('*' * 30 + ' [VKOGA] ' + '*' * 30)
@@ -170,30 +170,16 @@ class VKOGA(BaseEstimator):
             print('       |_ regularization par. : %2.2e' % self.reg_par)
             print('       |_ restriction par.    : %2.2e' % self.restr_par)
             print('')
-            
+
         if self.verbose and when == 'end':
             print('Training completed with')
             print('       |_ selected points     : %8d / %8d' % (self.train_hist['n'][-1], self.max_iter))
             print('       |_ train residual      : %2.2e / %2.2e' % (self.train_hist['f'][-1], self.tol_f))
             print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
-                        
+
         if self.verbose and when == 'track':
             print('Training ongoing with')
             print('       |_ selected points     : %8d / %8d' % (self.train_hist['n'][-1], self.max_iter))
             print('       |_ train residual      : %2.2e / %2.2e' % (self.train_hist['f'][-1], self.tol_f))
             print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
-
-
-#%% Utilities to 
-import pickle
-def save_object(obj, filename):
-    with open(filename, 'wb') as output:
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
-def load_object(filename):        
-    with open(filename, 'rb') as input:
-        obj = pickle.load(input)    
-    return obj
-
-
 

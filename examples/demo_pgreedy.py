@@ -1,10 +1,10 @@
-ori#!/usr/bin/env python
+#!/usr/bin/env python
 
 
 #%% Import
 import numpy as np
 import matplotlib.pyplot as plt
-from pgreedy import PGreedy
+from vkoga.pgreedy import PGreedy
 
 
 
@@ -29,22 +29,22 @@ dictionary_test = RandomDictionaryDisk(10000)
 
 
 #%%
-#from kernels import Gaussian
+#from vkoga.kernels import Gaussian
 #kernel = Gaussian()
 #ep = 1
 
-from kernels import Wendland
+from vkoga.kernels import Wendland
 k = 3
 ep = .1
 kernel = Wendland(k=k, d=2)
 #exponent = (k + 2) / d - 1 / 2
 
-#from kernels import Matern
+#from vkoga.kernels import Matern
 #k = 3
 #kernel = Matern(ep=1e-3, k=k)
 #exponent = (2 * k ) / d - 1 / 2
 
-#from kernels import Polynomial
+#from vkoga.kernels import Polynomial
 #kernel = Polynomial(a=0, p=2)
 
 
