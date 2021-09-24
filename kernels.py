@@ -86,10 +86,22 @@ class Matern(RBF):
             self.rbf = lambda ep, r: np.exp(-ep * r) * (1 + ep * r)
         elif k == 2:
             self.name = 'mat2'
-            self.rbf = lambda ep, r: np.exp(-ep * r) * (3 + 3 * ep * r + (ep * r) ** 2)
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (3 + 3 * ep * r + 1 * (ep * r) ** 2)
         elif k == 3:
             self.name = 'mat3'
-            self.rbf = lambda ep, r: np.exp(-ep * r) * (15 + 15 * ep * r + 6 * (ep * r) ** 2 + (ep * r) ** 3)
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (15 + 15 * ep * r + 6 * (ep * r) ** 2 + 1 * (ep * r) ** 3)
+        elif k == 4:
+            self.name = 'mat4'
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (105 + 105 * ep * r + 45 * (ep * r) ** 2 + 10 * (ep * r) ** 3 + 1 * (ep * r) ** 4)
+        elif k == 5:
+            self.name = 'mat5'
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (945 + 945 * ep * r + 420 * (ep * r) ** 2 + 105 * (ep * r) ** 3 + 15 * (ep * r) ** 4 + 1 * (ep * r) ** 5)
+        elif k == 6:
+            self.name = 'mat6'
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (10395 + 10395 * ep * r + 4725 * (ep * r) ** 2 + 1260 * (ep * r) ** 3 + 210 * (ep * r) ** 4 + 21 * (ep * r) ** 5 + 1 * (ep * r) ** 6)
+        elif k == 7:
+            self.name = 'mat7'
+            self.rbf = lambda ep, r: np.exp(-ep * r) * (135135 + 135135 * ep * r + 62370 * (ep * r) ** 2 + 17325 * (ep * r) ** 3 + 3150 * (ep * r) ** 4 + 378 * (ep * r) ** 5 + 28 * (ep * r) ** 6 + 1 * (ep * r) ** 7)
         else:
             self.name = None
             self.rbf = None
