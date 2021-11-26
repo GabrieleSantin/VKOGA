@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from vkoga.kernels import Gaussian
+from kernels import Gaussian
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
