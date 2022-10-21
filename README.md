@@ -13,17 +13,21 @@ The best way to start using the algorithm is having a look at the [demo notebook
 ## How to cite:
 If you use this code in your work, please cite the paper
 
-> G. Santin and B. Haasdonk, [_Kernel Methods for Surrogate Modeling_](https://arxiv.org/abs/1907.10556), ArXiv preprint 1907.10556 (2019).
+> G. Santin, B. Haasdonk, Kernel methods for surrogate modeling, In: P. Benner, S. Grivet-
+Talocia, A. Quarteroni, G. Rozza, W. Schilders, and L. M. Silveira, editors, Model Order Reduc-
+tion, volume 2. De Gruyter, 2021.
 
 
 ```bibtex:
-@TechReport{SaHa2019,
-  Author                   = {Santin, Gabriele and Haasdonk, Bernard},
-  Title                    = {Kernel Methods for Surrogate Modeling},
-  Year                     = {2019},
-  Number                   = {1907.10556},
-  Type                     = {ArXiv},
-  Url                      = {https://arxiv.org/abs/1907.10556}
+@InCollection{Santin2021,
+  author       = {Santin, Gabriele and Haasdonk, Bernard},
+  title        = {Kernel Methods for Surrogate Modeling},
+  booktitle    = {Model Order Reduction},
+  year         = {2021},
+  editor       = {Benner, Peter and Grivet-Talocia, Stefano and Quarteroni, Alfio and Rozza, Gianluigi and Schilders, Wil and Silveira, Luís Miguel},
+  booksubtitle = {System- and Data-Driven Methods and Algorithms},
+  volume       = {2},
+  publisher    = {De Gruyter},
 }
 ```
 
