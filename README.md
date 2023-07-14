@@ -39,7 +39,9 @@ For further details on the algorithm and its implementation, please refer to the
 
 > G. Santin, D. Wittwar, B. Haasdonk, [_Greedy regularized kernel interpolation_](https://arxiv.org/abs/1807.09575), ArXiv preprint 1807.09575 (2018).
 
-> T. Wenzel, G. Santin, B. Haasdonk, [_A novel class of stabilized greedy kernel approximation algorithms: Convergence, stability & uniform point distribution_](https://arxiv.org/abs/1911.04352), ArXiv preprint 1911.04352 (2019).
+> T. Wenzel, G. Santin, B. Haasdonk, [_A novel class of stabilized greedy kernel approximation algorithms: Convergence, stability & uniform point distribution_]([https://arxiv.org/abs/1911.04352](https://www.sciencedirect.com/science/article/abs/pii/S0021904520301441)), Journal of Approximation Theory, 262:105508, (2021).
+
+> T. Wenzel, G. Santin, B. Haasdonk, [_Analysis of Target Data-Dependent Greedy Kernel Algorithms: Convergence Rates for f -, f · P - and f /P -Greedy._]([https://arxiv.org/abs/1911.04352](https://link.springer.com/article/10.1007/s00365-022-09592-3)), Constructive Approximation, (2022).
 
 ## Other implementations:
 The original Matlab version of this software is maintained [here](https://gitlab.mathematik.uni-stuttgart.de/pub/ians-anm/vkoga).
