@@ -3,7 +3,6 @@
 from abc import ABC, abstractmethod
 from scipy.spatial import distance_matrix
 import numpy as np
-import matplotlib.pyplot as plt
 
 # Abstract kernel
 class Kernel(ABC):
@@ -147,27 +146,3 @@ class Polynomial(Kernel):
     def set_params(self, par):
         self.a = par[0]
         self.p = par[1]
-
-        
-# A demo usage
-def main():
-    ker = Gaussian()
-
-    x = np.linspace(-1, 1, 100)[:, None]
-    y = np.matrix([0])
-    A = ker.eval(x, y)
-
-
-    fig = plt.figure(1)
-    fig.clf()
-    ax = fig.gca()
-    ax.plot(x, A)
-    ax.set_title('A kernel: ' + str(ker))
-    fig.show()
-
-
-if __name__ == '__main__':
-    main()
-
-
-        

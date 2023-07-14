@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from vkoga.kernels import Gaussian
+from .kernels import Gaussian
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
@@ -309,19 +309,3 @@ class VKOGA(BaseEstimator):
             else:
                 print('       |_ train residual      : %2.2e / %2.2e' % (self.train_hist['f'][-1], self.tol_f))
                 print('       |_ train power fun     : %2.2e / %2.2e' % (self.train_hist['p'][-1], self.tol_p))
-
-
-
-#%% Utilities to 
-import pickle
-def save_object(obj, filename):
-    with open(filename, 'wb') as output:
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
-def load_object(filename):        
-    with open(filename, 'rb') as input:
-        obj = pickle.load(input)    
-    return obj
-
-
-
