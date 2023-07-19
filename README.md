@@ -2,6 +2,12 @@
 Python implementation of the Vectorial Kernel Orthogonal Greedy Algorithm.
 
 
+## Installation
+
+pip install git+https://github.com/GabrieleSantin/VKOGA.git
+
+
+
 ## Usage:
 The algorithm is implemented as a [scikit-learn](https://scikit-learn.org/stable/) `Estimator`, and it can be used via the `fit` and `predict` methods.
 
