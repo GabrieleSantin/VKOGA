@@ -8,7 +8,7 @@ pip install git+https://github.com/GabrieleSantin/VKOGA.git
 
 
 
-## Usage:
+## Usage
 The algorithm is implemented as a [scikit-learn](https://scikit-learn.org/stable/) `Estimator`, and it can be used via the `fit` and `predict` methods.
 
 The best way to start using the algorithm is having a look at the [demo notebook](demo.ipynb), which can also be executed online on Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/GabrieleSantin/VKOGA/master?filepath=demo.ipynb)
@@ -22,7 +22,7 @@ All those Gauss functions have the same width.
 ![](visualization.gif)
 
 
-## How to cite:
+## How to cite
 If you use this code in your work, please cite the paper
 
 > G. Santin, B. Haasdonk, Kernel methods for surrogate modeling, In: P. Benner, S. Grivet-
@@ -55,5 +55,5 @@ For further details on the algorithm and its implementation, please refer to the
 
 > T. Wenzel, G. Santin, B. Haasdonk, [_Analysis of Target Data-Dependent Greedy Kernel Algorithms: Convergence Rates for f -, f · P - and f /P -Greedy._](https://link.springer.com/article/10.1007/s00365-022-09592-3), Constructive Approximation, (2022).
 
-## Other implementations:
+## Other implementations
 The original Matlab version of this software is maintained [here](https://gitlab.mathematik.uni-stuttgart.de/pub/ians-anm/vkoga).
