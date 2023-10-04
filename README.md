@@ -8,6 +8,14 @@ pip install git+https://github.com/GabrieleSantin/VKOGA.git
 
 
 
+## Watch VKOGA in action
+![](visualization.gif)
+Fitting MATLAB's *peaks()* function with a gaussian Kernel Model.
+The model is *f*-greedy, i.e. it iteratively chooses the points where the difference to the reference function is highest and adds a new gaussian function there.
+All those Gauss functions have the same width.
+
+
+
 ## Usage:
 The algorithm is implemented as a [scikit-learn](https://scikit-learn.org/stable/) `Estimator`, and it can be used via the `fit` and `predict` methods.
 
